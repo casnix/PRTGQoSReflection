@@ -18,14 +18,17 @@
 /* License.                                                      */
 /*****************************************************************/
 
+package main
 
 import (
 	"log"
 	"net"
 	"os"
 
+	"github.com/casnix/PRTGQoSReflection/buildinfo"
 	"github.com/jessevdk/go-flags"
 	"github.com/BurntSushi/toml"
+	"github.com/TwiN/go-color"
 )
 
 
@@ -34,29 +37,42 @@ var cli_opts struct {
 	Port 		string 	`short:"p" long:"port" description:"Provide port defined in PRTG"`
 	Configuration 	string 	`short:"c" long:"conf" description:"Path of config file, if not provided default qosreflect.conf will be used"`
 	Host 		string 	`short:"o" long:"host" description:"Provide the IP address if the interface the script should bind to.\nUse ''All'' to bind to all available interfaces (recommended)"`
-	ReplyIP		string 	`short:"r" long:"replyip" description:"Provide the IP address of the PRTG Probe which sends the packets.\nThe reflector will then only reply to this IP"`
+	ReplyIP		string 	`short:"r" long:"replyip" description:"NOT SUPPORTED YET Provide the IP address of the PRTG Probe which sends the packets.\nThe reflector will then only reply to this IP"`
 	ReplyPort 	string 	`short:"t" long:"replyport" description:"Provide the port the packets should be bounced to"`
-	NATMode 	bool 	`short:"n" long:"nat" description:"Option enables the NAT mode so packets are reflected exactly to the port they are received from"`
-	Debug 		bool 	`short:"d" long:"debug" description:"Set to turn on detailed output"`
+	NATMode 	bool 	`short:"n" long:"nat" description:"NOT SUPPORTED YET Option enables the NAT mode so packets are reflected exactly to the port they are received from"`
+	Debug 		bool 	`short:"d" long:"debug" description:"NOT SUPPORTED YET Set to turn on detailed output"`
 }
+
+
+// IsFlagPassed(string) bool -- Checks if CLI flag was passed
+// Input: - name string		-- Flag name
+// Output: - true		-- Flag found
+// 	   - false		-- Flag not found
+/*func IsFlagPassed(name string) bool {
+	found := false
+	flag.Visit(fun(f *flag.Flag) {
+		if f.Name == name {
+			found = true
+		}
+	})
+	
+	return found
+}
+*/
 
 // ParseCLI(void) error -- Parses command line arguments
 // Input: none
 // Output: None, modifies cli_opts.
 func ParseCLI() error  {
+	// go-flags is broken for error handling.  May switch to https://github.com/geomyidia/flagswrap in the future.
 	var parser = flags.NewParser(&cli_opts, flags.Default)
 	if _, err := parser.Parse(); err != nil {
-		switch flagsErr := err.(type) {
-		case flags.ErrorType:
-			if flagsErr == flags.ErrHelp {
+		if w, ok := err.(*flags.Error); ok {
+			if w.Type == flags.ErrHelp {
 				os.Exit(0)
 			}
-			os.Exit(1)
-		default:
-			os.Exit(1)
 		}
-
-		return error
+		os.Exit(1)
 	}
 
 	return nil
@@ -67,9 +83,9 @@ func ParseCLI() error  {
 // Output: none, modifies cli_opts.
 func ReadConfig() error {
 	var configFile = cli_opts.Configuration
-	_, err: os.Stat(configFile)
+	_, err := os.Stat(configFile)
 	if err != nil {
-		log.Fatal("Configuration file is missing: ", configFile)
+		log.Fatalf("%s Configuration file is missing: %s", color.Ize(color.Red, buildinfo.LogName), color.Ize(color.Red, configFile))
 	}
 
 	if _, err := toml.DecodeFile(configFile, &cli_opts); err != nil {
@@ -81,23 +97,31 @@ func ReadConfig() error {
 
 // main(void) -- Entry point for program.
 func main() {
+	log.Printf("%s %s release %s, build %s is starting...\n", color.Ize(color.Cyan, buildinfo.LogName), buildinfo.AppName, color.Ize(color.Purple, buildinfo.ReleaseVersion), color.Ize(color.Purple, buildinfo.BuildVersion))
+
 	// Local variable declaration space
 	var hOST = ""
 	var pORT = "0"
-	var rESTRICT = True
+	var rESTRICT = true
 
 	ParseCLI()
 	
+	// FIX THIS, NEED TO CHECK GO-FLAGS FOR IF FLAG IS PASSED
 	// Validate configuration options
-	if cli_opts.Configuration == "" { // No configuration file specified
+	if false {
+		ReadConfig()
+	}
+	/*if !IsFlagPassed("Configuration") { // No configuration file specified
+		log.Printf("%s debug cli_opts.Configuration == %s", color.Ize(color.Cyan, buildinfo.LogName), color.Ize(color.Yellow, cli_opts.Configuration))
 		// Validate that required options are set in this case
-		if cli_opts.ReplyIP == "" || cli_opts.Host == "" || cli_opts.Port == "" { // We must fall back to the configuration file
+		if !IsFlagPassed("ReplyIP") || !IsFlagPassed("Host") || !IsFlagPassed("Port") { // We must fall back to the configuration file
+			log.Printf("%s debug cli_opts.(ReplyIP, Host, Port) == (%s, %s, %s)", color.Ize(color.Cyan, buildinfo.LogName), color.Ize(color.Yellow, cli_opts.ReplyIP), color.Ize(color.Yellow, cli_opts.Host), color.Ize(color.Yellow, cli_opts.Port))
 			cli_opts.Configuration = "qosreflect.conf"
 			ReadConfig()
 		}
 	} else {
 		ReadConfig()
-	}
+	}*/
 
 	if cli_opts.Host != "All" {
 		hOST = cli_opts.Host
@@ -110,21 +134,24 @@ func main() {
 	}
 
 	if cli_opts.ReplyIP == "None" || cli_opts.ReplyIP == "" {
-		rESTRICT = False
+		rESTRICT = false
 	}
 
 	
 
-	server, err := net.ListenPacket("udp", ":"+pORT)
+	server, err := net.ListenPacket("udp", hOST+":"+pORT)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%s%s Fatal error: %s", color.Ize(color.Red, buildinfo.LogName), color.Ize(color.Yellow, "{0}"), color.Ize(color.Red, err.Error()))
 	}
 	defer server.Close()
-
+	
+	log.Printf("%s%s UDP reflection server is running, listening on %s:%s.\n", color.Ize(color.Cyan, buildinfo.LogName), color.Ize(color.Yellow, "{0}"), hOST, pORT)
+	// Add check for replyIP.
+	rESTRICT = false
 	for {
 		udpBuffer := make([]byte, 1024)
 		index, address, err := server.ReadFrom(udpBuffer)
-		if err != nil {
+		if err != nil && !rESTRICT {
 			continue
 		}
 		go Reflect(server, address, udpBuffer[:index])
@@ -138,8 +165,5 @@ func main() {
 //	  - []byte			- Byte buffer with UDP data to serve
 // Outpu: None.
 func Reflect(server net.PacketConn, address net.Addr, udpBuffer []byte) {
-	// 0 - 1: ID
-	// 2: QR(1): Opcode(4)
-	udpBuffer[2] |= 0x80 // set qr bit
 	server.WriteTo(udpBuffer, address)
 }
