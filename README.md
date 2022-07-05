@@ -7,24 +7,24 @@ None, really.
 
 ## Build prerequisites
 * Golang 1.18.1
-* Bash environment (for build scripts) -- can be on Linux or WSL, or something like WSL.
+* Bash environment (for build scripts) -- can be on Linux or WSL, or something like Cygwin.
 
 ## Installation
 * [OPTIONAL]create a file called "qosreflect.conf" with the following contents:
 
-host:All
-port:50000
-replyip:None
+host=All
+port=50000
+replyip=None
 
-The script can now be called with parameters to allow several instances running. Just type qosreflect<.exe> --help to see all parameters. Example call below:
+The script can now be called with parameters to allow several instances running. Just type PRTGQoSReflection<.exe> --help to see all parameters. Example call below:
 
-qosreflect.exe --port 50000 --host All
+PRTGQoSReflection --port 50000 --host All
 
 Additional parameters are optional. You can still use a config file, then please use parameter --conf to provide the path.
 
-When "host" is set to "All" the script will try to bind to every available interface. Change to IP of an interface to make the script bind to a special interface.
+When "host" is set to "All" the script will try to bind to every available interface. Change to IP of an interface to make the script bind to a special interface. Leave blank to do the same thing as "All"
 Set "port" to the same one set up in PRTG.
-If an IP is specified in "replyip" the script will only process UDP packets from this IP.
+If an IP is specified in "replyip" the program will only process UDP packets from this IP and drop others.
 
 ## Debugging
 To debug whats going on call the script with the additional parameter -d or --debug
