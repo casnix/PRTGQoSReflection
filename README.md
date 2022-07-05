@@ -9,6 +9,8 @@ None, really.
 * Golang 1.18.1
 * Bash environment (for build scripts) -- can be on Linux or WSL, or something like Cygwin.
 
+To build, run the `build.sh` script in the source root.
+
 ## Installation
 * [OPTIONAL]create a file called "qosreflect.conf" with the following contents:
 
@@ -20,7 +22,9 @@ replyip=None
 
 The script can now be called with parameters to allow several instances running. Just type PRTGQoSReflection<.exe> --help to see all parameters. Example call below:
 
-PRTGQoSReflection --port 50000 --host All
+```
+$ ./PRTGQoSReflection --port 50000 --host All
+```
 
 Additional parameters are optional. You can still use a config file, then please use parameter --conf to provide the path.
 
