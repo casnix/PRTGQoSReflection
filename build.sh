@@ -14,6 +14,18 @@ source ./buildinfo.sh
 ##############################################################################
 ####
 ##
+## Validate build arguments, print help.
+if [[ "$1" != "linux" ]] && [[ "$1" != "windows" ]] && [[ "$1" != "macos" ]]; then
+	echo "Usage: $0 <linux|windows|macos>"
+	echo "    linux        - Will build with linux/unix naming style."
+	echo "    windows      - Will build a .EXE file."
+	echo "    macos        - Alias of linux."
+	exit
+fi
+
+##############################################################################
+####
+##
 ## Print information, set up build environment.
 echo -e "${Yellow}Building ${Red}$AppName${Yellow} release version ${Purple}$ReleaseVersion.${NC}"
 echo -e "${Yellow}This build version will be ${Purple}$BuildVersion.${NC}"
@@ -46,6 +58,24 @@ fi
 ##############################################################################
 ####
 ##
+## Build ./README.md
+## Depends on:
+##   TEMPLATE ./readme-template.md
+echo -e "${Yellow}Cleaning ./README.md...${NC}"
+echo -e "${Yellow}Building ./README.md based on ./readme-template.md...${NC}"
+if [[ -f "./README.md" ]]; then
+	rm ./README.md
+fi
+
+sed "s/{{ShortAppName}}/$ShortAppName/" ./readme-template.md \
+	| sed "s/{{ReleaseVersion}}/$ReleaseVersion/" \
+	| sed "s/{{BuildVersion}}/$BuildVersion/" \
+	| sed "s/{{ShortAppPath}}/$ShortAppPath/" \
+	> ./README.md
+
+##############################################################################
+####
+##
 ## Run dynamic build info script.
 ## Depends on:
 ##   SCRIPT ./buildinfo.sh
@@ -60,4 +90,10 @@ echo -e "${LightRed}No QA has been built to verify this.  De facto QA will happe
 ## Depends on:
 ##   GOLANG ./dynamicgeneration/buildinfo.go
 echo -e "${Yellow}Building Go program...${NC}"
-go build -o PRTGQoSReflection.exe
+if [[ "$1" == "linux" ]] || [[ "$1" == "macos" ]]; then
+	go build -o PRTGQoSReflection
+fi
+if [[ "$1" == "windows" ]]; then
+	go build -o PRTGQoSReflection.exe
+fi
+

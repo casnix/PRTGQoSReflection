@@ -8,7 +8,7 @@ outputFile="$outputDirectory/buildinfo.go"
 export AppName="PRTG QoS Reflection"
 export ShortAppName="PRTGQoSReflection"
 export ShortAppPath="\$PRTGQOSPATH"
-export ReleaseVersion="0.1"
+export ReleaseVersion="v1.0.0"
 export BuildVersion="$(date +%Y%m%d).$(echo $(date +%H%M).$(whoami) | base64 | sed 's/==$//')"
 export CopyrightNotice="Copyright 2022 Matthew Rienzo for Southwestern Healthcare Inc."
 

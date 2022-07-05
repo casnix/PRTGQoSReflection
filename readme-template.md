@@ -2,8 +2,8 @@
 This is a reproduction of github.com/PaesslerAG/QoSReflect written in Golang with my style of build scripts.  The purpose of this is to have a standalone executable
 that can be built on any OS and provides the same functionality of PaesslerAG/QoSReflect without depending on Python.
 
-## Current version in MASTER: v1.0.0
-## Latest build in MASTER: 20220705.MTQyMC5yaWVuem9tCg
+## Current version in MASTER: {{ReleaseVersion}}
+## Latest build in MASTER: {{BuildVersion}}
 
 ## Execution prerequisites
 None, really.  
