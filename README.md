@@ -12,9 +12,11 @@ None, really.
 ## Installation
 * [OPTIONAL]create a file called "qosreflect.conf" with the following contents:
 
+```
 host=All
 port=50000
 replyip=None
+```
 
 The script can now be called with parameters to allow several instances running. Just type PRTGQoSReflection<.exe> --help to see all parameters. Example call below:
 
