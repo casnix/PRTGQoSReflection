@@ -71,6 +71,7 @@ sed "s/{{ShortAppName}}/$ShortAppName/" ./readme-template.md \
 	| sed "s/{{ReleaseVersion}}/$ReleaseVersion/" \
 	| sed "s/{{BuildVersion}}/$BuildVersion/" \
 	| sed "s/{{ShortAppPath}}/$ShortAppPath/" \
+	| sed "s/{{AppName}}/$AppName/" \
 	> ./README.md
 
 ##############################################################################

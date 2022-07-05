@@ -5,7 +5,7 @@ source ./ansi.sh
 outputDirectory="./dynamicgeneration/buildinfo"
 outputFile="$outputDirectory/buildinfo.go"
 
-export AppName="PRTG QoS Reflection"
+export AppName="PRTGQoSReflection"
 export ShortAppName="PRTGQoSReflection"
 export ShortAppPath="\$PRTGQOSPATH"
 export ReleaseVersion="v1.0.0"
