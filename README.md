@@ -3,7 +3,7 @@ This is a reproduction of github.com/PaesslerAG/QoSReflect written in Golang wit
 that can be built on any OS and provides the same functionality of PaesslerAG/QoSReflect without depending on Python.
 
 ## Current version in MASTER: v1.0.0
-## Latest build in MASTER: 20220705.MTQyOC5yaWVuem9tCg
+## Latest build in MASTER: 20221012.MTkxNi51MF9hMzc3Cg
 
 ## Execution prerequisites
 None, really.  
@@ -37,4 +37,4 @@ Set "port" to the same one set up in PRTG.
 If an IP is specified in "replyip" the program will only process UDP packets from this IP and drop others.
 
 ## Debugging
-To debug whats going on call the script with the additional parameter -d or --debug
+To debug whats going on call the program with the additional parameter -d or --debug
